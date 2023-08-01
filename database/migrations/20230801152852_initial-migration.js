@@ -16,6 +16,13 @@ exports.up = function(knex) {
             table.increments("id");
             table.string("name", 128).notNullable();
             table.integer("level").notNullable();
+            table.integer("trainer_id")
+                .unsigned()
+                .notNullable()
+                .references("id")
+                .inTable("trainers")
+                .onDelete("CASCADE")
+                .onUpdate("CASCADE");
         })
         .createTable("pokemon_types", (table) => {
             table.integer("pokemon_id")
