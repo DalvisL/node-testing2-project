@@ -14,8 +14,8 @@ async function getAll() {
      * types: {
      *     primary: 'electric',
      *     secondary: null
-     * }
-     * }
+     *  }
+     * },
      * 
      * ]
      */
