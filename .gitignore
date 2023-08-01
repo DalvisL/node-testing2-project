@@ -132,3 +132,6 @@ dist
 # node modules
 node_modules
 ```
+
+# ignore testing db
+testing.db3
