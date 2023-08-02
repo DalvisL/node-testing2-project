@@ -59,16 +59,22 @@ async function getById(id) {
     .where('pokemon.id', id)
     .orderBy('pokemon.id');
 
-    const result = {
-        id: pokemon[0].id,
-        name: pokemon[0].name,
-        level: pokemon[0].level,
-        trainer: pokemon[0].trainer,
-        types: {
-            primary: pokemon[0].type,
-            secondary: null
-        }
-    };
+    let result
+
+    if (pokemon.length === 0) {
+        result = null
+    } else {
+        result = {
+            id: pokemon[0].id,
+            name: pokemon[0].name,
+            level: pokemon[0].level,
+            trainer: pokemon[0].trainer,
+            types: {
+                primary: pokemon[0].type,
+                secondary: null
+            }
+        };
+    }
 
     pokemon.forEach(p => {
         if (p.type !== result.types.primary) {

@@ -14,26 +14,22 @@ router.get('/', (req, res, next) => {
         .then(pokemon => {
             res.status(200).json(pokemon);
         })
-        .catch(err => {
-            res.status(500).json({
-                message: `Error retrieving pokemon: ${err}}`,
-            });
-            next(err);
-        })
+        .catch(next);
 });
 
 // GET pokemon by id
 router.get('/:id', validateIdByType('pokemon'), (req, res, next) => {
     Pokemon.getById(req.params.id)
         .then(pokemon => {
-            res.status(200).json(pokemon);
+            if (pokemon) {
+                res.status(200).json(pokemon);
+            } else {
+                res.status(404).json({
+                    message: `Pokemon with id ${req.params.id} not found`,
+                });
+            }
         })
-        .catch(err => {
-            res.status(500).json({
-                message: `Error retrieving pokemon with id ${req.params.id}: ${err}}`,
-            });
-            next(err);
-        });
+        .catch(next);
 });
 
 // POST new pokemon
@@ -45,20 +41,14 @@ router.post('/', validatePokemonBody, convertTypesToIds, (req, res, next) => {
         .then(pokemon => {
             res.status(201).json(pokemon);
         })
-        .catch(err => {
-            res.status(500).json({
-                message: `Error adding pokemon: ${err}}`,
-            });
-            next(err);
-        });
+        .catch(next);
 });
 
 router.use((err, req, res, next) => { // eslint-disable-line
-   // catch all error handler
-    res.status(500).json({
-        message: `Pokemon router error: ${err.message}`,
-        error: err.message,
-        stack: err.stack,
+    // catch all error handler
+    const status = err.status || 500;
+    res.status(status).json({
+        message: err.message,
     });
 }); 
 

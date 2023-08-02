@@ -10,65 +10,60 @@ router.get('/', (req, res, next) => {
         .then(trainers => {
             res.status(200).json(trainers);
         })
-        .catch(err => {
-            res.status(500).json({
-                message: `Error retrieving trainers: ${err}}`,
-            });
-            next(err);
-        });
-
+        .catch(next);
 });
 
 // GET trainer by id
 router.get('/:id', validateIdByType('trainers'), (req, res, next) => {
     Trainers.getById(req.params.id)
         .then(trainer => {
-            res.status(200).json(trainer);
+            if (trainer) {
+                res.status(200).json(trainer);
+            } else {
+                res.status(404).json({
+                    message: `Pokemon with id ${req.params.id} not found`,
+                });
+            }
         })
-        .catch(err => {
-            res.status(500).json({
-                message: `Error retrieving trainer with id ${req.params.id}: ${err}}`,
-            });
-            next(err);
-        });
+        .catch(next);
 });
 
 // GET all pokemon for a trainer
 router.get('/:id/pokemon', validateIdByType('trainers'), (req, res, next) => {
     Trainers.getPokemon(req.params.id)
         .then(pokemon => {
-            res.status(200).json(pokemon);
+            if (pokemon) {
+                res.status(200).json(pokemon);
+            } else {
+                res.status(404).json({
+                    message: `Trainer with id ${req.params.id} not found`,
+                });
+            }
         })
-        .catch(err => {
-            res.status(500).json({
-                message: `Error retrieving pokemon for trainer with id ${req.params.id}: ${err}}`,
-            });
-            next(err);
-        });
+        .catch(next);
 });
 
 // POST new trainer
 router.post('/', (req, res, next) => {
     const { name } = req.body;
+    if(!name) {
+        return res.status(400).json({
+            message: 'Missing required name field',
+        });
+    }
+
     Trainers.add({ name })
         .then(trainer => {
             res.status(201).json(trainer);
-        }
-        )
-        .catch(err => {
-            res.status(500).json({
-                message: `Error adding trainer: ${err}}`,
-            });
-            next(err);
-        });
-
+        })
+        .catch(next);
 });
 
 router.use((err, req, res, next) => { // eslint-disable-line
     // catch all error handler
-    res.status(500).json({
-        message: `Trainers router error: ${err.message}`,
-        error: err.message,
+    const status = err.status || 500;
+    res.status(status).json({
+        message: err.message,
     });
-});
+})
 module.exports = router;

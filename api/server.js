@@ -13,11 +13,6 @@ server.get('/', (req, res) => {
     res.send({
         message: 'API is running!'
     })
-    .catch(err => {
-        res.status(500).json({
-            message: `Error retrieving the message: ${err}}`,
-        });
-    });
 });
 
 server.use('*', (req, res) => {

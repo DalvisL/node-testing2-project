@@ -1,40 +1,32 @@
 const db = require('../../database/dbConfig');
 
-
 const validateIdByType = (type) => async (req, res, next) => {    
     if (type === 'pokemon') {
         const pokemon = await db('pokemon').where('id', req.params.id).first();
         if (!pokemon) {
-            next({
-                status: 404,
+            return res.status(404).json({
                 message: `Pokemon with id ${req.params.id} not found`,
             });
-        } else {
-            next();
         }
     } else if (type === 'trainers') {
         const trainer = await db('trainers').where('id', req.params.id).first();
         if (!trainer) {
-            next({
-                status: 404,
+            return res.status(404).json({
                 message: `Trainer with id ${req.params.id} not found`,
             });
-        } else {
-            next();
         }
     }
+    next();
 };
 
 const validatePokemonBody = (req, res, next) => {
     const { name, level, trainer_id, primary_type } = req.body;
     if (!name || !level || !trainer_id || !primary_type) {
-        next({
-            status: 400,
+        return res.status(400).json({
             message: 'Missing required name, level, trainer_id, or types field',
         });
-    } else {
-        next();
     }
+    next();
 };
 
 const convertTypesToIds = async (req, res, next) => {
@@ -47,8 +39,7 @@ const convertTypesToIds = async (req, res, next) => {
     for (let i = 0; i < types.length; i++) {
         const type = await db('types').where('type', types[i]).first();
         if (!type) {
-            next({
-                status: 404,
+            return res.status(404).json({
                 message: `Type ${types[i]} not found`,
             });
         } else {
